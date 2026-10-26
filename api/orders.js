@@ -35,7 +35,7 @@ module.exports = async (req, res) => {
       return res.json({ ok: true });
     }
     res.status(405).end();
-  } catch (e) {
+  } catch (e) { console.error(e);
     res.status(500).json({ error: "erro interno" });
   }
 };
