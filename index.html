@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bora Bora Gastrobar · Cardápio</title>
+<style>
+:root{--bg:#faf8f5;--card:#fff;--tx:#1d1b18;--mu:#7a746b;--bd:#e6e1d9;--ac:#0b7285;--ok:#2b8a3e;--wa:#e8590c;--bl:#1971c2}
+@media (prefers-color-scheme:dark){:root{--bg:#121a1c;--card:#1b2427;--tx:#eef3f3;--mu:#9bacaf;--bd:#2d3b3f;--ac:#3bc9db;--ok:#69db7c;--wa:#ffa94d;--bl:#74c0fc}}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:110px}
+header{padding:12px 16px;border-bottom:1px solid var(--bd);position:sticky;top:0;background:var(--bg);z-index:5}
+h1{font-size:18px;margin:0}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:8px 0 0}
+.chips button{flex:none;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:5px 12px;border-radius:99px;font:inherit;font-size:13px;cursor:pointer}
+main{max-width:760px;margin:0 auto;padding:8px 16px}
+h2{font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:var(--mu);margin:22px 0 8px;scroll-margin-top:110px}
+.item{display:flex;justify-content:space-between;gap:12px;align-items:center;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:8px}
+.item small{display:block;color:var(--mu)}
+.qty{display:flex;align-items:center;gap:8px;white-space:nowrap}
+button{font:inherit;cursor:pointer}
+.qty button{width:34px;height:34px;border:0;border-radius:8px;background:var(--bd);color:var(--tx);font-size:18px}
+.btn{border:0;border-radius:8px;background:var(--ac);color:#fff;padding:12px 16px;font-weight:600;width:100%}
+.btn:disabled{opacity:.4}
+.bar{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));background:var(--bg);border-top:1px solid var(--bd)}
+.bar>div{max-width:760px;margin:0 auto;display:grid;gap:8px}
+input{width:100%;font:inherit;padding:10px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx)}
+.row{display:flex;gap:8px}
+.tag{font-size:12px;font-weight:700;padding:2px 8px;border-radius:99px;color:#fff;white-space:nowrap}
+.novo{background:var(--bl)}.preparando{background:var(--wa)}.pronto{background:var(--ok)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;max-width:1100px;margin:0 auto;padding:16px}
+.col h3{margin:0 0 8px;font-size:15px}
+.tk{background:var(--card);border:1px solid var(--bd);border-left:5px solid var(--bl);border-radius:10px;padding:10px;margin-bottom:10px}
+.tk.preparando{border-left-color:var(--wa)}.tk.pronto{border-left-color:var(--ok)}.tk.late{outline:2px solid #e03131}
+.tk h4{margin:0;display:flex;justify-content:space-between}
+.tk ul{margin:6px 0;padding-left:18px}.tk p{margin:4px 0;color:var(--mu);font-size:14px}
+.tk .btn{padding:8px;font-size:14px}
+.empty{color:var(--mu);text-align:center;padding:24px 0}
+</style>
+</head>
+<body>
+<header><h1 id="ttl">Bora Bora Gastrobar</h1><div class="chips" id="chips"></div></header>
+<div id="app"></div>
+<script>
+const RAW=`## Drinks da casa
+Suquinho RJ|Jim Beam bourbon, mate da casa, limão ou maracujá|29.90
+Honey limonade|Jim Beam honey, limão, água com gás e espuma de gengibre|31.90
+Bora bora red|Servido na nossa banheira: vodka, polpa e xarope de morango, xarope de melancia, soda e espuma de gengibre|37.90
+Bora bora blue|Gin, curaçau blue, soda e espuma de gengibre|33.90
+Jorge Amado|Cachaça, polpa de maracujá, limão e canela em pau|28.90
+Neon Sunset|Gin, cítrus, água tônica e espuma|29.90
+Bora mágic|Vodka, energético tropical, limão espremido e chá butterfly pea|33.90
+Pagodeira|Vodka, maracujá, leite condensado e espuma de gengibre|29.90
+Tropical bora bora|Jim Beam black cherry, limão, abacaxi e espuma cítrica|32.90
+Mojito Apple|Jim Beam Apple, hortelã, limão e água com gás|31.90
+Cherry cola|Jim Beam black cherry e Coca-Cola|33.90
+Gol da vitória|Vodka Absolut, tabasco, limão e xarope de açúcar|32.90
+Craque da rodada|Whisky Jameson e chá de limão|34.90
+Toque de mestre|Dose de chuvas|19
+## Bolinhos
+Bolinho de feijoada|6 unidades|33.90
+Crock de costela suína com creme cheese|6 unidades|44.90
+Bolinho de costela bovina com agrião|6 unidades|39.90
+Crock de camarão com catupiry|6 unidades|54.90
+Bolinho de bacalhau|6 unidades|54.90
+Pastéis (porção)|6 unidades: costela, queijo, camarão, carne seca e siri|54.90
+## Petiscos da casa
+Batata bora bora|Costela bovina, catupiry e muçarela|64.90
+Batata maluca|Catupiry, cheddar e farofa de bacon|39.98
+Gorjão de frango|400 g de frango empanado na farinha panko com molho especial|68
+Gorjão de peixe|Filé de peixe em tiras empanado no trigo e fubá, com molho especial|88
+Gorjão de frango com fritas|Porção bem servida para quem quer petiscar bem|88
+Gorjão de peixe com fritas|Porção bem servida com molho especial|88
+Frango a passarinho|Porção de 800 g|55
+Frango a passarinho com fritas|800 g de frango e 400 g de batata|70
+Torresmo da casa|Nosso torresmo bem pipoca|44.90
+Camarão frito|Camarão alho e óleo|88.90
+Isca de carne empanada|400 g de contrafilé empanado|99
+Tábua bora bora|Linguiça toscana, tiras de frango, tiras de carne e fritas. 1 kg de petisco|129.90
+Picanha aperitivo|4 bifes de picanha, fritas, molho e farofa|139.90
+## Refeição para a família
+Costela suína com barbecue|Acompanha fritas e arroz|120
+Super parmegiana bora bora|Frango ou contrafilé, arroz e fritas. Serve até 3 pessoas|169
+Churrasco misto|1 kg de proteínas (frango, linguiça toscana, contrafilé, picanha suína), fritas, arroz e farofa. Serve até 3 pessoas|179
+Picanha no queijo|6 bifes de picanha, arroz, fritas, vinagrete e farofa. Serve até 3 pessoas|200
+## Drinks clássicos
+Caipirinha|Cachaça, açúcar e limão|20
+Caipivodka|Vodka, açúcar e sabor: limão, morango, abacaxi ou maracujá|25.90
+Gin tônica|Gin e água tônica|25.90
+Mojito|Rum, hortelã, xarope de açúcar e água com gás|27.90
+Lagoa azul|Vodka, curaçau blue, soda e limão espremido|28.90
+Piña colada|Rum, leite de coco, creme de leite, abacaxi e gelo|29.99
+Red tea|Gin, chá de frutas vermelhas e água tônica|31.90
+Sex on the beach|Vodka, licor de pêssego, suco de laranja e suco de cranberry|29.90
+## Drinks premium
+Jorge Amado|Cachaça, polpa de maracujá, suco de limão e canela em pau|29.90
+Moscow mule|Vodka, gengibre e espuma de gengibre|31.90
+Tropical gin|Gin, xarope de tangerina e energético tropical|31.90
+Gin melancia|Gin, xarope de melancia e tônica|30
+Lara Gin|Gin, xarope de tangerina, energético tropical e espuma de gengibre|34.90
+Pitaya purple|Gin, mix de pitaya com abacaxi e espuma de gengibre|38.90
+Bora bora red|Vodka, polpa e licor de morango, licor de melancia e espuma de gengibre|37.90
+Bora bora blue|Vodka, curaçau blue, soda e espuma|33.90
+## Coquetéis sem álcool
+Cherry colada|Cereja, leite condensado, morango e creme de leite|28
+Piña coconut|Abacaxi, hortelã, água de coco e creme de leite|28
+## Cervejas 600 ml
+Stella Gold|600 ml|23
+Stella Artois|600 ml|21
+Corona|600 ml|23
+Original|600 ml|20
+Brahma|600 ml|20
+Spaten|600 ml|20
+Amstel|600 ml|18
+## Long necks
+Stella Gold|Long neck|15
+Corona|Long neck|13.50
+Corona zero|Long neck|13.50
+Stella Artois|Long neck|13
+Spaten|Long neck|12.50
+## Chopes
+Chope claro|Caneca|8
+Chope de vinho|Caneca|9.90
+Chope Brahma|Caneca|9.99
+## Não alcoólicos
+Água sem gás||5
+Água com gás||6
+Água tônica|Lata|8
+Tônica Antártica|Água tônica|8
+Pepsi|Lata|8
+Pepsi zero|Lata|8
+Pepsi black|Lata|8
+Guaraná Antártica|Lata|8
+Guaraná Antártica zero|Lata|8
+H2O limão ou limoneto|500 ml|10
+Suco|300 ml: laranja, maracujá, morango ou abacaxi|12.90
+## Doses
+Bananinha|Dose|10
+Don Luiz|Dose|14.99
+Tequila|Dose|19.90
+Ballena|Dose|19.90
+Red Label|Dose|20
+Licor 43|Dose|25
+Black Label|Dose|29.90
+Buchanan’s|Dose|29.90
+## Garrafas
+Smirnoff|Garrafa|130
+Red Label|Garrafa de 1 L|150
+Beefeater|Garrafa|160
+Tanqueray|Garrafa|200
+Absolut|Garrafa|200
+Black Label|Garrafa de 1 L|280
+Buchanan’s|Garrafa de 1 L|285
+Gold Label|Garrafa de 750 ml|400`;
+const CATS=[],ITEMS={};
+RAW.split("\n").forEach(l=>{if(l.startsWith("## "))CATS.push({n:l.slice(3),i:[]});else{const[n,d,p]=l.split("|"),c=CATS[CATS.length-1],id=CATS.length-1+"."+c.i.length;ITEMS[id]={n:n+" · "+c.n,p:+p};c.i.push([id,n,d,+p])}});
+const brl=v=>"R$ "+v.toFixed(2).replace(".",",");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const $=id=>document.getElementById(id);
+const ls={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+let kds=location.hash==="#cozinha",cart={},orders=[],sig="",mesa="",obs="",mine=JSON.parse(ls.get("mine")||"[]"),pin=sessionStorage.getItem("pin")||"",err="";
+const total=()=>Object.entries(cart).reduce((s,[k,q])=>s+ITEMS[k].p*q,0),count=()=>Object.values(cart).reduce((a,b)=>a+b,0);
+const call=(m,body,qs="")=>fetch("/api/orders"+qs,{method:m,headers:{"content-type":"application/json","x-pin":pin},body:body?JSON.stringify(body):undefined}).then(r=>r.ok?r.json():Promise.reject(r.status));
+async function poll(){
+  try{
+    if(kds){if(!pin){pin=prompt("PIN da cozinha")||"";sessionStorage.setItem("pin",pin)}orders=await call("GET");err=""}
+    else if(mine.length)orders=await call("GET",0,"?ids="+mine.join(","));
+    else orders=[];
+  }catch(e){if(kds&&e===401){pin="";sessionStorage.removeItem("pin");err="PIN incorreto. Recarregue a página."}else err="Sem conexão, tentando de novo…"}
+  const s=JSON.stringify(orders)+err;if(s!==sig){sig=s;render()}
+}
+function chg(id,d){cart[id]=Math.max(0,(cart[id]||0)+d);if(!cart[id])delete cart[id];render()}
+async function send(){
+  if(!count()||!mesa.trim())return;$("go").disabled=true;
+  try{const o=await call("POST",{mesa:mesa.trim(),obs:obs.trim(),total:total(),items:Object.entries(cart).map(([k,q])=>({n:ITEMS[k].n,q}))});
+    mine.push(o.id);ls.set("mine",JSON.stringify(mine));cart={};obs="";scrollTo(0,0);poll()}
+  catch(e){alert("Não foi possível enviar o pedido. Tente novamente ou chame o garçom.");render()}
+}
+const label={novo:"Recebido",preparando:"Preparando",pronto:"Pronto!"};
+function renderC(){
+  $("chips").innerHTML=CATS.map((c,i)=>`<button data-c="${i}">${esc(c.n)}</button>`).join("");
+  $("chips").querySelectorAll("button").forEach(b=>b.onclick=()=>$("c"+b.dataset.c).scrollIntoView({behavior:"smooth"}));
+  let h=err?`<p class="empty">${err}</p>`:"";
+  if(orders.length)h+="<h2>Seus pedidos</h2>"+orders.map(o=>`<div class="item"><div><b>Mesa ${esc(o.mesa)} · ${brl(o.total)}</b><small>${o.items.map(i=>i.q+"× "+esc(i.n)).join(", ")}</small></div><span class="tag ${o.status}">${label[o.status]}</span></div>`).join("");
+  CATS.forEach((c,ci)=>{h+=`<h2 id="c${ci}">${esc(c.n)}</h2>`+c.i.map(([id,n,d,p])=>`<div class="item"><div><b>${esc(n)}</b><small>${esc(d||"")}</small><b>${brl(p)}</b></div><div class="qty"><button data-m="${id}">−</button><span>${cart[id]||0}</span><button data-p="${id}">+</button></div></div>`).join("")});
+  $("app").innerHTML=`<main>${h}</main><div class="bar"><div><div class="row"><input id="mesa" placeholder="Nº da mesa" inputmode="numeric" value="${esc(mesa)}" style="max-width:130px"><input id="obs" placeholder="Observação (ex.: sabor, sem gelo)" value="${esc(obs)}"></div><button class="btn" id="go" ${count()&&mesa.trim()?"":"disabled"}>Enviar pedido · ${brl(total())}</button></div></div>`;
+  $("app").querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>chg(b.dataset.p,1));
+  $("app").querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>chg(b.dataset.m,-1));
+  $("mesa").oninput=e=>{mesa=e.target.value;$("go").disabled=!(count()&&mesa.trim())};
+  $("obs").oninput=e=>obs=e.target.value;$("go").onclick=send;
+}
+const NEXT={novo:["preparando","Iniciar preparo"],preparando:["pronto","Marcar pronto"],pronto:["entregue","Entregue"]};
+function renderK(){
+  $("ttl").textContent="Cozinha · KDS";$("chips").innerHTML="";
+  const cols=[["novo","Novos"],["preparando","Em preparo"],["pronto","Prontos"]];
+  $("app").innerHTML=(err?`<p class="empty">${err}</p>`:"")+`<div class="cols">`+cols.map(([s,t])=>{const l=orders.filter(o=>o.status===s);
+    return `<div class="col"><h3>${t} (${l.length})</h3>`+(l.length?l.map(o=>{const m=Math.floor((Date.now()-o.createdAt)/60000);
+    return `<div class="tk ${s} ${s!=="pronto"&&m>=15?"late":""}"><h4><span>Mesa ${esc(o.mesa)}</span><span>${m} min</span></h4><ul>${o.items.map(i=>`<li><b>${i.q}×</b> ${esc(i.n)}</li>`).join("")}</ul>${o.obs?`<p>📝 ${esc(o.obs)}</p>`:""}<button class="btn" data-id="${o.id}" data-s="${NEXT[s][0]}">${NEXT[s][1]}</button></div>`}).join(""):`<div class="empty">Nada por aqui</div>`)+`</div>`}).join("")+`</div>`;
+  $("app").querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>call("PATCH",{id:b.dataset.id,status:b.dataset.s}).then(poll).catch(()=>{}));
+}
+function render(){const a=document.activeElement,id=a&&a.id,pos=a&&a.selectionStart;kds?renderK():renderC();
+  if(id&&$(id)&&$(id).tagName==="INPUT"){$(id).focus();try{$(id).setSelectionRange(pos,pos)}catch(e){}}}
+render();poll();setInterval(poll,4000);if(kds)setInterval(render,30000);
+</script>
+</body>
+</html>

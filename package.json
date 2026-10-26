@@ -1,0 +1,1 @@
+{"name":"cardapio-kds","private":true,"dependencies":{"@upstash/redis":"^1.34.0"}}
