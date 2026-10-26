@@ -1,13 +1,20 @@
 // Pedidos: cliente cria (POST) e consulta os próprios (GET ?ids=); cozinha lista e atualiza com PIN.
 const { Redis } = require("@upstash/redis");
-const r = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN,
-});
+
+// Procura a variável do Redis por qualquer prefixo (KV_, STORAGE_KV_, UPSTASH_REDIS_...)
+const pick = (re) => {
+  const k = Object.keys(process.env).find((k) => re.test(k) && process.env[k]);
+  return k ? process.env[k] : undefined;
+};
+const url = pick(/REST_(API_)?URL$/);
+const token = pick(/REST_(API_)?TOKEN$/);
+const r = url && token ? new Redis({ url, token }) : null;
+
 const K = "orders";
 const isKds = (req) => !!process.env.KDS_PIN && req.headers["x-pin"] === process.env.KDS_PIN;
 
 module.exports = async (req, res) => {
+  if (!r) return res.status(500).json({ error: "Redis não conectado: conecte o Upstash Redis ao projeto e faça um Redeploy" });
   try {
     if (req.method === "POST") {
       const b = req.body || {};
@@ -35,7 +42,8 @@ module.exports = async (req, res) => {
       return res.json({ ok: true });
     }
     res.status(405).end();
-  } catch (e) { console.error(e);
+  } catch (e) {
+    console.error(e);
     res.status(500).json({ error: String(e && e.message) });
   }
 };
